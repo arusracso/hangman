@@ -7,18 +7,17 @@ class HangmanSolution {
   private int kNumCharacters;
   private int kDefaultCharNum = 26;
   private final char[] kCharSet = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 
-  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' '};
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' '};
   public HangmanSolution(ArrayList<String> lexicon, int kNumCharacters, String buffer) {
     kSolutionList = new ArrayList<String>();
     kSolutionIndex = 0;
     kCharBuffer = buffer.toCharArray();
     this.lexicon = lexicon;
     this.kNumCharacters = kNumCharacters;
-    println("Constructed a HangmanSolution");
   }
 
   private void findPossibleSolutions(String word, int depth) {
-    if (depth == kNumCharacters - 1) {
+    if (depth == kNumCharacters) {
       String lower = word.toLowerCase();
       if (lexicon.contains(lower)) kSolutionList.add(lower);
       return;
@@ -37,6 +36,7 @@ class HangmanSolution {
   public int findAllPossibleSolutions() {
     findPossibleSolutions(new String(kCharBuffer), 0);
     kNumSolutions = kSolutionList.size();
+    println("Found this many: " + kNumSolutions);
     return kNumSolutions;
   }
 

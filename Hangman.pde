@@ -1,7 +1,5 @@
 static final String kDefaultFilepath = "./metadata";
-static final int kDefaultWidth = 600;
-static final int kDefaultHeight = 600;
-
+private HangmanSolution solution;
 void setup() {
   size(600, 600);
   smooth(8);
@@ -21,7 +19,7 @@ void importMetadata(String filename) {
         String[] tokens = split(line, ' ');
         switch (tokens[0]) { 
         case "lexicon":
-          buildlexicon(tokens[1]);
+          buildLexicon(tokens[1]);
           break;
         case "charnum": 
           kNumCharacters = Integer.parseInt(tokens[1]);
@@ -49,13 +47,15 @@ void setupCharacters() {
 
 static ArrayList<String> lexicon = new ArrayList<String>();
 static int totalWords = 0;
-void buildlexicon(String lexiconFilepath) {
+void buildLexicon(String lexiconFilepath) {
   BufferedReader reader = createReader(lexiconFilepath);
   String word = null;
   int wordCount = 0;
   try {
     while ((word = reader.readLine()) != null) {
-      lexicon.add(word.toLowerCase());
+      word = word.toLowerCase();
+      lexicon.add(word);
+      if (word.equalsIgnoreCase("abate")) println("abates in there");
       wordCount++;
     }
     totalWords = wordCount;
@@ -149,7 +149,6 @@ boolean clickedButton() {
   int x = mouseX;
   int y = mouseY;
   for (int i = 0; i < kNumCharacters; i++) {
-    //println("Mouse: (" + x + ", " + y + ")" + " Button: (" + kDownPoints[i].x + ", " + kDownPoints[i].y + ")");
     if (dist(x, y, kDownPoints[i].x, kDownPoints[i].y) < maxRadius) {
       char ch = kCharBuffer[i];
       if (ch == ' ') {
@@ -171,42 +170,18 @@ boolean clickedButton() {
       return true;
     } else if (dist(x, y, kGoPoint.x, kGoPoint.y) < maxRadius) {
       println("[Hangman] Finding possible solutions...");
-      HangmanSolution solution = new HangmanSolution(lexicon, kNumCharacters, new String(kCharBuffer));
+      solution = new HangmanSolution(lexicon, kNumCharacters, new String(kCharBuffer));
       solution.findAllPossibleSolutions();
-      findAllPossibleSolutions(0, new String(kCharBuffer));
+      ArrayList<String> solutions = solution.getAllPossibleSolutions();
       println("[Hangman] Found all solutions: " + solutions.size());
       for (String str : solutions) {
         println("solution: " + str);
       }
-      kNumSolutions = solutions.size();
       return true;
     }
   }
   return false;
 }
-/*
-ArrayList<String> solutions = new ArrayList<String>();
-static boolean setup = false;
-static int kSolutionIndex = 0;
-static int kNumSolutions;
-void findAllPossibleSolutions(int depth, String word) {
-  setup = true;
-  if (depth == kNumCharacters - 1) {
-    String lower = word.toLowerCase();
-    if (lexicon.contains(lower)) solutions.add(lower);
-    return;
-  } else {
-    if (kCharBuffer[depth] != ' ') {
-      findAllPossibleSolutions(depth + 1, word);
-    } else {
-      char[] charArray = word.toCharArray();
-      for (int i = 0; i < kNumCharInSet - 1; i++) {
-        charArray[depth] = kCharSet[i];
-        findAllPossibleSolutions(depth + 1, new String(charArray));
-      }
-    }
-  }
-}*/
 
 void clear() {
   for (int i = 0; i < kNumCharacters; i++) {
@@ -226,23 +201,20 @@ void keyPressed() {
   }
   if (key == 'x') clear();
   println("[Hangman] Key pressed...");
+  String updatedWord = "";
   if (keyCode == RIGHT) {
-    kSolutionIndex = (kSolutionIndex + 1) % kNumSolutions;
-    println("Solution index: " + kSolutionIndex);
+    updatedWord = solution.getNextSolution();
   } else if (keyCode == LEFT) {
-    if (kSolutionIndex == 0) kSolutionIndex = kNumSolutions;
-    kSolutionIndex--;
-    println("Solution index: " + kSolutionIndex);
+    updatedWord = solution.getPreviousSolution();
   }
-  if (kSolutionIndex > solutions.size()) return;
-  String solution = solutions.get(kSolutionIndex);
-  for (int i = 0; i < solution.length(); i++) {
-    kCharBuffer[i] = Character.toUpperCase(solution.charAt(i));
+  for (int i = 0; i < updatedWord.length(); i++) {
+    kCharBuffer[i] = Character.toUpperCase(updatedWord.charAt(i));
   }
   println("After change buffer is: " + new String(kCharBuffer));
 }
 
 void mousePressed() {
+  
   if (clickedButton()) {
   }
 }
@@ -251,16 +223,4 @@ void draw() {
   background(0, 221, 255);
   setupLayout();
   drawCharacters();
-}
-
-class Point {
-  int x, y;
-  Point(int x, int y) {
-    this.x = x;
-    this.y = y;
-  }
-  Point() {
-    this.x = 0;
-    this.y = 0;
-  }
 }
