@@ -1,10 +1,19 @@
-static final String kDefaultFilepath = "./metadata";
+private static final String kMetadataPath = "./metadata";
+private static final int kNumGameStates = 3;
+private final color kDefaultBackground = color(0, 221, 225);
+private final color kMenuColor = color(49, 58, 233);
+private GameState[] kGStates;
+private int kGStateIndex;
 private HangmanSolution solution;
 void setup() {
+  background(kMenuColor);
   size(600, 600);
   smooth(8);
-  background(0, 221, 225);
-  importMetadata(kDefaultFilepath);
+  kGStateIndex = 0;
+  kGStates = new GameState[kNumGameStates];
+  kGStates[0] = GameState.MainMenu;
+  kGStates[0].setImageState(false);
+  kGStates[0].setBackgroundColor(kDefaultBackground);
 }
 
 static final char kIgnoreChar = '$';
@@ -16,25 +25,27 @@ void importMetadata(String filename) {
   try {
     while ((line = reader.readLine()) != null) {
       if (line.charAt(0) != kIgnoreChar) {
-        String[] tokens = split(line, ' ');
-        switch (tokens[0]) { 
-        case "lexicon":
-          buildLexicon(tokens[1]);
-          break;
-        case "charnum": 
-          kNumCharacters = Integer.parseInt(tokens[1]);
-          break;
-        default: 
-          break;
-        }
+        tokenizeMetadata(line);
       }
     }
-    setupCharacters();
-    drawCharacters();
-    setupLayout();
   } 
   catch (IOException e) {
     e.printStackTrace();
+  }
+  setupCharacters();
+}
+
+void tokenizeMetadata(String line) {
+  String[] tokens = split(line, ' ');
+  switch (tokens[0]) {
+  case "lexicon": 
+    buildLexicon(tokens[1]);
+    break;
+  case "charnum":
+    kNumCharacters = Integer.parseInt(tokens[1]);
+    break;
+  default:
+    break;
   }
 }
 
@@ -55,7 +66,6 @@ void buildLexicon(String lexiconFilepath) {
     while ((word = reader.readLine()) != null) {
       word = word.toLowerCase();
       lexicon.add(word);
-      if (word.equalsIgnoreCase("abate")) println("abates in there");
       wordCount++;
     }
     totalWords = wordCount;
@@ -210,17 +220,27 @@ void keyPressed() {
   for (int i = 0; i < updatedWord.length(); i++) {
     kCharBuffer[i] = Character.toUpperCase(updatedWord.charAt(i));
   }
-  println("After change buffer is: " + new String(kCharBuffer));
 }
 
 void mousePressed() {
-  
   if (clickedButton()) {
   }
 }
 
 void draw() {
-  background(0, 221, 255);
-  setupLayout();
+  GameState gs = kGStates[kGStateIndex];
+  if (gs == GameState.MainMenu) {
+    background(kMenuColor);
+    return;
+  }
+  importMetadata(kMetadataPath);
+  if (gs.getImageState()) {
+    PImage img = gs.getBackgroundImage();
+    image(img, 0, 0, width, height);
+  } else {
+    color backgroundColor = gs.getBackgroundColor();
+    background(backgroundColor);
+  }
   drawCharacters();
+  setupLayout();
 }
