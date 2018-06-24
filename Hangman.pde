@@ -16,8 +16,6 @@ void setup() {
   kGStates[0].setBackgroundColor(kDefaultBackground);
 }
 
-
-
 static final char kIgnoreChar = '$';
 static int kNumCharacters = 0;
 static char[] kCharBuffer;
