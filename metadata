@@ -1,0 +1,8 @@
+$ IGNORE COMMENT
+$ MORE COMMENT TESTING
+chars set.data
+charnum 5
+box-x 50
+box-y 85
+lexicon lexicon.data
+images images/*.img
