@@ -20,7 +20,7 @@ class HangmanSolution {
   private void findPossibleSolutions(String word, int depth) {
     if (depth == kNumCharacters - 1) {
       String lower = word.toLowerCase();
-      if (lexicon.contains(lower)) solutions.add(lower);
+      if (lexicon.contains(lower)) kSolutionList.add(lower);
       return;
     }
     if (kCharBuffer[depth] != ' ') {
@@ -34,8 +34,8 @@ class HangmanSolution {
     }
   }
 
-  public int findAllPossibleSolutions(String word) {
-    findPossibleSolutions(word, 0);
+  public int findAllPossibleSolutions() {
+    findPossibleSolutions(new String(kCharBuffer), 0);
     kNumSolutions = kSolutionList.size();
     return kNumSolutions;
   }
@@ -46,12 +46,12 @@ class HangmanSolution {
 
   public String getNextSolution() {
     kSolutionIndex = (kSolutionIndex + 1) % kNumSolutions;
-    return solutions.get(kSolutionIndex);
+    return kSolutionList.get(kSolutionIndex);
   }
 
   public String getPreviousSolution() {
     if (kSolutionIndex == 0) kSolutionIndex = kNumSolutions;
     kSolutionIndex--;
-    return solutions.get(kSolutionIndex);
+    return kSolutionList.get(kSolutionIndex);
   }
 }

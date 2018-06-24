@@ -20,8 +20,8 @@ void importMetadata(String filename) {
       if (line.charAt(0) != kIgnoreChar) {
         String[] tokens = split(line, ' ');
         switch (tokens[0]) { 
-        case "lexiconPrivate":
-          buildlexiconPrivate(tokens[1]);
+        case "lexicon":
+          buildlexicon(tokens[1]);
           break;
         case "charnum": 
           kNumCharacters = Integer.parseInt(tokens[1]);
@@ -47,19 +47,19 @@ void setupCharacters() {
   }
 }
 
-static ArrayList<String> lexiconPrivate = new ArrayList<String>();
+static ArrayList<String> lexicon = new ArrayList<String>();
 static int totalWords = 0;
-void buildlexiconPrivate(String lexiconPrivateFilepath) {
-  BufferedReader reader = createReader(lexiconPrivateFilepath);
+void buildlexicon(String lexiconFilepath) {
+  BufferedReader reader = createReader(lexiconFilepath);
   String word = null;
   int wordCount = 0;
   try {
     while ((word = reader.readLine()) != null) {
-      lexiconPrivate.add(word.toLowerCase());
+      lexicon.add(word.toLowerCase());
       wordCount++;
     }
     totalWords = wordCount;
-    println("[Hangman] Successfully read " + wordCount + " words from: " + lexiconPrivateFilepath + ".");
+    println("[Hangman] Successfully read " + wordCount + " words from: " + lexiconFilepath + ".");
   } 
   catch (IOException e) {
     e.printStackTrace();
@@ -171,7 +171,8 @@ boolean clickedButton() {
       return true;
     } else if (dist(x, y, kGoPoint.x, kGoPoint.y) < maxRadius) {
       println("[Hangman] Finding possible solutions...");
-      solutions.clear();
+      HangmanSolution solution = new HangmanSolution(lexicon, kNumCharacters, new String(kCharBuffer));
+      solution.findAllPossibleSolutions();
       findAllPossibleSolutions(0, new String(kCharBuffer));
       println("[Hangman] Found all solutions: " + solutions.size());
       for (String str : solutions) {
@@ -183,7 +184,7 @@ boolean clickedButton() {
   }
   return false;
 }
-
+/*
 ArrayList<String> solutions = new ArrayList<String>();
 static boolean setup = false;
 static int kSolutionIndex = 0;
@@ -192,7 +193,7 @@ void findAllPossibleSolutions(int depth, String word) {
   setup = true;
   if (depth == kNumCharacters - 1) {
     String lower = word.toLowerCase();
-    if (lexiconPrivate.contains(lower)) solutions.add(lower);
+    if (lexicon.contains(lower)) solutions.add(lower);
     return;
   } else {
     if (kCharBuffer[depth] != ' ') {
@@ -205,7 +206,7 @@ void findAllPossibleSolutions(int depth, String word) {
       }
     }
   }
-}
+}*/
 
 void clear() {
   for (int i = 0; i < kNumCharacters; i++) {
@@ -224,7 +225,6 @@ void keyPressed() {
     }
   }
   if (key == 'x') clear();
-  if (!setup) return;
   println("[Hangman] Key pressed...");
   if (keyCode == RIGHT) {
     kSolutionIndex = (kSolutionIndex + 1) % kNumSolutions;
