@@ -4,7 +4,8 @@ static final int kDefaultHeight = 600;
 
 void setup() {
   size(600, 600);
-  background(0, 0, 0);
+  smooth(8);
+  background(0, 221, 225);
   importMetadata(kDefaultFilepath);
 }
 
@@ -18,9 +19,9 @@ void importMetadata(String filename) {
     while ((line = reader.readLine()) != null) {
       if (line.charAt(0) != kIgnoreChar) {
         String[] tokens = split(line, ' ');
-        switch (tokens[0]) {
-        case "lexicon":
-          buildLexicon(tokens[1]);
+        switch (tokens[0]) { 
+        case "lexiconPrivate":
+          buildlexiconPrivate(tokens[1]);
           break;
         case "charnum": 
           kNumCharacters = Integer.parseInt(tokens[1]);
@@ -42,23 +43,23 @@ void importMetadata(String filename) {
 void setupCharacters() {
   kCharBuffer = new char[kNumCharacters];
   for (int i = 0; i < kNumCharacters; i++) {
-    kCharBuffer[i] = 'X';
+    kCharBuffer[i] = ' ';
   }
 }
 
-static ArrayList<String> lexicon = new ArrayList<String>();
+static ArrayList<String> lexiconPrivate = new ArrayList<String>();
 static int totalWords = 0;
-void buildLexicon(String lexiconFilepath) {
-  BufferedReader reader = createReader(lexiconFilepath);
+void buildlexiconPrivate(String lexiconPrivateFilepath) {
+  BufferedReader reader = createReader(lexiconPrivateFilepath);
   String word = null;
   int wordCount = 0;
   try {
     while ((word = reader.readLine()) != null) {
-      lexicon.add(word);
+      lexiconPrivate.add(word.toLowerCase());
       wordCount++;
     }
     totalWords = wordCount;
-    println("[Hangman] Successfully read " + wordCount + " words from: " + lexiconFilepath + ".");
+    println("[Hangman] Successfully read " + wordCount + " words from: " + lexiconPrivateFilepath + ".");
   } 
   catch (IOException e) {
     e.printStackTrace();
@@ -80,10 +81,12 @@ static Point[] kUpPoints;
 PImage[] kArrowUpImages = new PImage[kNumArrows];
 PImage[] kArrowDownImages = new PImage[kNumArrows];
 PImage kGoImage;
+PImage letterA;
 static Point kGoPoint;
 static boolean first = true;
 void setupLayout() {
   if (first) {
+    letterA = loadImage(kImageDirectory + "a-unclicked.png");
     kDownPoints = new Point[kNumCharacters];
     kUpPoints = new Point[kNumCharacters];
     kGoImage = loadImage(kImageDirectory + "go.png");
@@ -182,12 +185,14 @@ boolean clickedButton() {
 }
 
 ArrayList<String> solutions = new ArrayList<String>();
+static boolean setup = false;
 static int kSolutionIndex = 0;
 static int kNumSolutions;
 void findAllPossibleSolutions(int depth, String word) {
+  setup = true;
   if (depth == kNumCharacters - 1) {
     String lower = word.toLowerCase();
-    if (lexicon.contains(lower)) solutions.add(lower);
+    if (lexiconPrivate.contains(lower)) solutions.add(lower);
     return;
   } else {
     if (kCharBuffer[depth] != ' ') {
@@ -202,7 +207,24 @@ void findAllPossibleSolutions(int depth, String word) {
   }
 }
 
+void clear() {
+  for (int i = 0; i < kNumCharacters; i++) {
+    kCharBuffer[i] = ' ';
+  }
+}
+
+static boolean loop = true;
 void keyPressed() {
+  if (key == 'q') {
+    loop = (!loop);
+    if (loop) {
+      loop();
+    } else {
+      noLoop();
+    }
+  }
+  if (key == 'x') clear();
+  if (!setup) return;
   println("[Hangman] Key pressed...");
   if (keyCode == RIGHT) {
     kSolutionIndex = (kSolutionIndex + 1) % kNumSolutions;
@@ -212,6 +234,7 @@ void keyPressed() {
     kSolutionIndex--;
     println("Solution index: " + kSolutionIndex);
   }
+  if (kSolutionIndex > solutions.size()) return;
   String solution = solutions.get(kSolutionIndex);
   for (int i = 0; i < solution.length(); i++) {
     kCharBuffer[i] = Character.toUpperCase(solution.charAt(i));
@@ -225,7 +248,7 @@ void mousePressed() {
 }
 
 void draw() {
-  background(0);
+  background(0, 221, 255);
   setupLayout();
   drawCharacters();
 }
