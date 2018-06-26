@@ -5,6 +5,7 @@ private final color kMenuColor = color(49, 58, 233);
 private GameState[] kGStates;
 private int kGStateIndex;
 private HangmanSolution solution;
+private IterativeSolution solutionv2;
 void setup() {
   background(kDefaultBackground);
   size(600, 600);
@@ -19,6 +20,7 @@ void setup() {
 
 static final char kIgnoreChar = '$';
 static int kNumCharacters = 0;
+static int kNumDirectories = 0;
 static char[] kCharBuffer;
 void importMetadata(String filename) {
   BufferedReader reader = createReader(filename);
@@ -44,6 +46,9 @@ void tokenizeMetadata(String line) {
     break;
   case "charnum":
     kNumCharacters = Integer.parseInt(tokens[1]);
+    break;
+  case "dirs":
+    kNumDirectories = Integer.parseInt(tokens[1]);
     break;
   default:
     break;
@@ -181,9 +186,10 @@ boolean clickedButton() {
       return true;
     } else if (dist(x, y, kGoPoint.x, kGoPoint.y) < maxRadius) {
       println("[Hangman] Finding possible solutions...");
-      solution = new HangmanSolution(lexicon, kNumCharacters, new String(kCharBuffer));
-      solution.findAllPossibleSolutions();
-      ArrayList<String> solutions = solution.getAllPossibleSolutions();
+      solutionv2 = new IterativeSolution("./utils/len", kNumCharacters, new String(kCharBuffer));
+      //solution = new HangmanSolution(lexicon, kNumCharacters, new String(kCharBuffer));
+      solutionv2.findAllPossibleSolutions();
+      ArrayList<String> solutions = solutionv2.getAllPossibleSolutions();
       println("[Hangman] Found all solutions: " + solutions.size());
       for (String str : solutions) {
         println("solution: " + str);
@@ -214,9 +220,9 @@ void keyPressed() {
   println("[Hangman] Key pressed...");
   String updatedWord = "";
   if (keyCode == RIGHT) {
-    updatedWord = solution.getNextSolution();
+    updatedWord = solutionv2.getNextSolution();
   } else if (keyCode == LEFT) {
-    updatedWord = solution.getPreviousSolution();
+    updatedWord = solutionv2.getPreviousSolution();
   }
   for (int i = 0; i < updatedWord.length(); i++) {
     kCharBuffer[i] = Character.toUpperCase(updatedWord.charAt(i));
