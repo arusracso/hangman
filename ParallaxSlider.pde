@@ -1,3 +1,1 @@
-class ParalaxSlider {
- //introduce implementation for main menu 
-}
+class ParallaxSlider {}

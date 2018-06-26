@@ -7,12 +7,11 @@ class Point {
   }
   
   Point() {
-    this.x = 0;
-    this.y = 0;
+    x = 0;
+    y = 0;
   }
   
   public boolean inBounds(int x1, int y1, int x2, int y2) {
-    if ((x < x1) || (x > x2) || (y < y1) ||(y > y2)) return false;
-    return true;
+    return !((x < x1) || (x > x2) || (y < y1) ||(y > y2));
   }
 }

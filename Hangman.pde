@@ -42,7 +42,7 @@ void tokenizeMetadata(String line) {
   String[] tokens = split(line, ' ');
   switch (tokens[0]) {
   case "lexicon": 
-    buildLexicon(tokens[1]);
+    //buildLexicon(tokens[1]);
     break;
   case "charnum":
     kNumCharacters = Integer.parseInt(tokens[1]);
@@ -239,7 +239,6 @@ void draw() {
   if (gs == GameState.MainMenu) {
     background(kDefaultBackground);
   }
-  //importMetadata(kMetadataPath);
   if (gs.getImageState()) {
     PImage img = gs.getBackgroundImage();
     image(img, 0, 0, width, height);
