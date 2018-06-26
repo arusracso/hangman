@@ -19,7 +19,10 @@ class HangmanSolution {
   private void findPossibleSolutions(String word, int depth) {
     if (depth == kNumCharacters) {
       String lower = word.toLowerCase();
-      if (lexicon.contains(lower)) kSolutionList.add(lower);
+      if (lexicon.contains(lower)) {
+        kSolutionList.add(lower);
+        println("found: " + lower);
+      }
       return;
     }
     if (kCharBuffer[depth] != ' ') {

@@ -1,12 +1,12 @@
 private static final String kMetadataPath = "./metadata";
 private static final int kNumGameStates = 3;
-private final color kDefaultBackground = color(0, 221, 225);
+private final color kDefaultBackground = color(0);
 private final color kMenuColor = color(49, 58, 233);
 private GameState[] kGStates;
 private int kGStateIndex;
 private HangmanSolution solution;
 void setup() {
-  background(kMenuColor);
+  background(kDefaultBackground);
   size(600, 600);
   smooth(8);
   kGStateIndex = 0;
@@ -14,6 +14,7 @@ void setup() {
   kGStates[0] = GameState.MainMenu;
   kGStates[0].setImageState(false);
   kGStates[0].setBackgroundColor(kDefaultBackground);
+  importMetadata(kMetadataPath);
 }
 
 static final char kIgnoreChar = '$';
@@ -230,10 +231,9 @@ void mousePressed() {
 void draw() {
   GameState gs = kGStates[kGStateIndex];
   if (gs == GameState.MainMenu) {
-    background(kMenuColor);
-    return;
+    background(kDefaultBackground);
   }
-  importMetadata(kMetadataPath);
+  //importMetadata(kMetadataPath);
   if (gs.getImageState()) {
     PImage img = gs.getBackgroundImage();
     image(img, 0, 0, width, height);
