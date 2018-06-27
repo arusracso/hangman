@@ -17,7 +17,7 @@ class IterativeSolution {
     for (int i = 0; i < kNumCharacters; i++) {
       if (kCharBuffer[i] == ' ') continue;
       char bufferCharacter = Character.toLowerCase(kCharBuffer[i]);
-      if (line.charAt(i) != bufferCharacter) return false;
+      if (line.charAt(i) != bufferCharacter); return false;
     }
     return true;
   }

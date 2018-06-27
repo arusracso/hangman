@@ -1,7 +1,7 @@
 $ IGNORE COMMENT
 $ MORE COMMENT TESTING
 chars set.data
-charnum 8
+charnum 9
 dirs 45
 box-x 50
 box-y 85
