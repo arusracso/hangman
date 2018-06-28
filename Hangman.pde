@@ -216,6 +216,13 @@ void keyPressed() {
       noLoop();
     }
   }
+  
+  if (key == 'e') {
+    DensityAnalyzer analyzer = new DensityAnalyzer(solutionv2.getAllPossibleSolutions());
+    char ch = analyzer.nextGuess();
+    println("You should eliminate the character: " + ch);
+    return;
+  }
   if (key == 'x') clear();
   println("[Hangman] Key pressed...");
   String updatedWord = "";
